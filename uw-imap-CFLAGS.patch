@@ -1,0 +1,19 @@
+--- origsrc/imap-2007f/src/osdep/unix/Makefile	2011-07-23 02:20:10.000000000 +0200
++++ src/imap-2007f/src/osdep/unix/Makefile	2013-03-21 17:13:14.917505300 +0100
+@@ -154,7 +154,6 @@ BINARIES=osdep.o mail.o misc.o newsrc.o
+  dummy.o pseudo.o netmsg.o flstring.o fdstring.o \
+  rfc822.o nntp.o smtp.o imap4r1.o pop3.o \
+  unix.o mbx.o mmdf.o tenex.o mtx.o news.o phile.o mh.o mx.o mix.o
+-CFLAGS=-g
+ 
+ CAT=cat
+ MAKE=make
+@@ -967,7 +967,7 @@ once:	onceenv ckp$(PASSWDTYPE) ssl$(SSLT
+ onceenv:
+ 	@echo Once-only environment setup...
+ 	echo $(CC) > CCTYPE
+-	echo $(BASECFLAGS) '$(EXTRACFLAGS)' -DCHUNKSIZE=$(CHUNKSIZE) > CFLAGS
++	echo $(CFLAGS) $(BASECFLAGS) '$(EXTRACFLAGS)' -DCHUNKSIZE=$(CHUNKSIZE) > CFLAGS
+ 	echo -DCREATEPROTO=$(CREATEPROTO) -DEMPTYPROTO=$(EMPTYPROTO) \
+ 	 -DMD5ENABLE=\"$(MD5PWD)\" -DMAILSPOOL=\"$(MAILSPOOL)\" \
+ 	 -DANONYMOUSHOME=\"$(MAILSPOOL)/anonymous\" \

@@ -1,0 +1,19 @@
+--- origsrc/imap-2007f/imaps.template	1970-01-01 01:00:00.000000000 +0100
++++ src/imap-2007f/imaps.template	2013-06-10 11:47:14.811001800 +0200
+@@ -0,0 +1,16 @@
++# default: off
++# description: The imap server serves imaps sessions
++
++service imaps
++{
++        socket_type     = stream
++        protocol        = tcp
++        wait            = no
++        user            = SYSTEM
++        server          = /usr/sbin/imapd
++        disable         = yes
++        log_on_success  += DURATION USERID
++        log_on_success  += PID HOST EXIT
++        log_on_failure  += USERID
++	log_type        = FILE /var/log/imaps.log
++}

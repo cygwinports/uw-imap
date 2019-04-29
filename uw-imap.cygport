@@ -1,0 +1,105 @@
+NAME="uw-imap"
+VERSION=2007f
+RELEASE=2
+CATEGORY="Mail"
+SUMMARY="UW IMAP Toolkit"
+DESCRIPTION="University of Washington IMAP toolkit."
+HOMEPAGE="http://www.washington.edu/imap/"
+SRC_URI="ftp://ftp.cac.washington.edu/imap/imap-${VERSION}.tar.gz"
+SRC_DIR="imap-${VERSION}"
+PATCH_URI="
+  uw-imap-CFLAGS.patch
+  uw-imap-Makefile-defaults.patch
+  uw-imap-NOCRYPT.patch
+  uw-imap-loginpw.patch
+  uw-imap-man8.patch
+  uw-imap-service.patch
+  uw-imap-IP6.patch
+"
+
+PKG_NAMES="${NAME} ${NAME}-imapd ${NAME}-util c-client"
+uw_imap_CATEGORY="${CATEGORY} Doc"
+uw_imap_SUMMARY="${SUMMARY} (doc)"
+uw_imap_CONTENTS="
+  usr/share/doc
+  --exclude=usr/share/doc/${NAME}/docs/internal.txt
+"
+uw_imap_imapd_SUMMARY="${SUMMARY} IMAP, POP3, and POP2 daemons (servers)"
+uw_imap_imapd_CONTENTS="
+  usr/sbin
+  usr/share/man/man8
+  etc
+"
+uw_imap_util_SUMMARY="${SUMMARY} (utilities)"
+uw_imap_util_CONTENTS="
+  usr/bin
+  usr/share/man/man1
+"
+c_client_SUMMARY="${SUMMARY} c-client library and headers (devel)"
+c_client_CATEGORY="${CATEGORY} Devel"
+c_client_CONTENTS="
+  usr/share/doc/${NAME}/docs/internal.txt
+  usr/lib
+  usr/include
+"
+
+
+# MAKEOPTS="-j1"
+
+src_compile() {
+	lndirs
+	cd ${B}
+	cygmake cyg
+}
+
+src_test() {
+	:
+}
+
+src_install() {
+	cd ${B}
+
+	dobin ${B}/mlock/mlock.exe
+	dobin ${B}/dmail/dmail.exe
+	dobin ${B}/mailutil/mailutil.exe
+	dobin ${B}/tmail/tmail.exe
+	dobin ${B}/mtest/mtest.exe
+
+	newsbin ${B}/imapd/imapd.exe  uw-imapd.exe
+	newsbin ${B}/ipopd/ipop2d.exe uw-ipop2d.exe
+	newsbin ${B}/ipopd/ipop3d.exe uw-ipop3d.exe
+
+	cd ${D}/usr/sbin
+	ln -s uw-imapd  imapd
+	ln -s uw-ipop2d ipop2d
+	ln -s uw-ipop3d ipop3d
+
+	doman ${S}/src/dmail/dmail.1
+	doman ${S}/src/mailutil/mailutil.1
+	doman ${S}/src/tmail/tmail.1
+
+	newman ${S}/src/imapd/imapd.8 uw-imapd.8
+	newman ${S}/src/ipopd/ipopd.8 uw-ipopd.8
+
+	cd ${D}/usr/share/man/man8
+	ln -s uw-imapd.8 imapd.8
+	ln -s uw-ipopd.8 ipopd.8
+
+	dolib ${B}/c-client/c-client.a
+
+	includeinto c-client
+	doinclude ${S}/src/c-client/*.h
+	cd ${S}/src/osdep/unix
+	doinclude os_cyg.h dummy.h env_unix.h fdstring.h flockcyg.h flocksim.h pseudo.h tcp_unix.h unix.h
+	# http://cygwin.com/ml/cygwin/2013-06/msg00113.html
+	doinclude ${B}/c-client/linkage.h
+	cd ${D}/usr/include/c-client
+	ln -s os_cyg.h osdep.h
+
+	dodoc ${S}/docs
+
+	insinto /etc/xinetd.d
+	newins ${S}/src/imap-${VERSION}/imaps.template imaps
+
+}
+DOCS="NOTICE CONTENTS SUPPORT CYGWIN-PATCHES/README.cygwin.txt"

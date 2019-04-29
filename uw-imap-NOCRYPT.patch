@@ -1,0 +1,10 @@
+--- origsrc/imap-2007f/src/osdep/unix/ckp_cyg.c	2011-07-23 02:20:11.000000000 +0200
++++ src/imap-2007f/src/osdep/unix/ckp_cyg.c	2013-03-21 17:13:14.919505400 +0100
+@@ -33,6 +33,7 @@
+  */
+ 
+ #undef ERROR
++#define NOCRYPT
+ #include <windows.h>
+ #include <sys/cygwin.h>
+ 

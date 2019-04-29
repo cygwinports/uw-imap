@@ -1,0 +1,15 @@
+--- origsrc/imap-2007f/src/osdep/unix/Makefile	2011-07-23 02:20:10.000000000 +0200
++++ src/imap-2007f/src/osdep/unix/Makefile	2013-03-21 17:13:14.917505300 +0100
+@@ -292,9 +291,10 @@ cyg:	# Cygwin - note that most local fil
+ 	$(BUILD) `$(CAT) SPECIALS` OS=$@ \
+ 	DEFAULTDRIVERS="imap nntp pop3 mbx unix phile" \
+ 	SIGTYPE=psx CHECKPW=cyg LOGINPW=cyg CRXTYPE=std \
+-	SPOOLDIR=/var \
+-	ACTIVEFILE=/usr/local/news/lib/active \
++	SPOOLDIR=/var/spool \
++	ACTIVEFILE=/var/lib/active \
+ 	RSHPATH=/usr/bin/rsh \
++	LOCKPGM=/usr/bin/mlock \
+ 	BASECFLAGS="$(GCCCFLAGS)" \
+ 	BASELDFLAGS="-lcrypt" \
+ 	CC=gcc
