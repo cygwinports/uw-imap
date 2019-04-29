@@ -1,6 +1,6 @@
 NAME="uw-imap"
 VERSION=2007f
-RELEASE=2
+RELEASE=3
 CATEGORY="Mail"
 SUMMARY="UW IMAP Toolkit"
 DESCRIPTION="University of Washington IMAP toolkit."
@@ -8,47 +8,51 @@ HOMEPAGE="http://www.washington.edu/imap/"
 SRC_URI="ftp://ftp.cac.washington.edu/imap/imap-${VERSION}.tar.gz"
 SRC_DIR="imap-${VERSION}"
 PATCH_URI="
+  https://src.fedoraproject.org/rpms/uw-imap/raw/master/f/imap-2007e-overflow.patch
+  https://src.fedoraproject.org/rpms/uw-imap/raw/master/f/imap-2007e-authmd5.patch
+  https://src.fedoraproject.org/rpms/uw-imap/raw/master/f/imap-2007f-format-security.patch
+  https://src.fedoraproject.org/rpms/uw-imap/raw/master/f/1006_openssl1.1_autoverify.patch
   uw-imap-CFLAGS.patch
   uw-imap-Makefile-defaults.patch
   uw-imap-NOCRYPT.patch
   uw-imap-loginpw.patch
   uw-imap-man8.patch
   uw-imap-service.patch
-  uw-imap-IP6.patch
 "
 
-PKG_NAMES="${NAME} ${NAME}-imapd ${NAME}-util c-client"
-uw_imap_CATEGORY="${CATEGORY} Doc"
-uw_imap_SUMMARY="${SUMMARY} (doc)"
+PKG_NAMES="${NAME} ${NAME}-utils libc-client-devel"
+uw_imap_SUMMARY="${SUMMARY} IMAP, POP3, and POP2 daemons (servers)"
+uw_imap_OBSOLETES="uw-imap-imapd"
 uw_imap_CONTENTS="
-  usr/share/doc
-  --exclude=usr/share/doc/${NAME}/docs/internal.txt
+  --exclude=internal.txt
+  etc/xinetd.d/imaps
+  usr/sbin/*
+  usr/share/doc/${NAME}
+  usr/share/man/man8/*
 "
-uw_imap_imapd_SUMMARY="${SUMMARY} IMAP, POP3, and POP2 daemons (servers)"
-uw_imap_imapd_CONTENTS="
-  usr/sbin
-  usr/share/man/man8
-  etc
+uw_imap_utils_SUMMARY="${SUMMARY} (utilities)"
+uw_imap_utils_OBSOLETES="uw-imap-util"
+uw_imap_utils_CONTENTS="
+  usr/bin/*
+  usr/share/man/man1/*
 "
-uw_imap_util_SUMMARY="${SUMMARY} (utilities)"
-uw_imap_util_CONTENTS="
-  usr/bin
-  usr/share/man/man1
-"
-c_client_SUMMARY="${SUMMARY} c-client library and headers (devel)"
-c_client_CATEGORY="${CATEGORY} Devel"
-c_client_CONTENTS="
+libc_client_devel_SUMMARY="${SUMMARY} c-client library and headers (devel)"
+libc_client_devel_CATEGORY="Libs"
+libc_client_devel_OBSOLETES="c-client"
+libc_client_devel_REQUIRES="libkrb5-devel libssl-devel"
+libc_client_devel_CONTENTS="
+  usr/include/c-client/
+  usr/lib/libc-client.a
   usr/share/doc/${NAME}/docs/internal.txt
-  usr/lib
-  usr/include
 "
 
-
+CFLAGS+=" -DFD_SETSIZE=1024 -Wno-pointer-sign -Wno-parentheses"
 # MAKEOPTS="-j1"
 
 src_compile() {
 	lndirs
 	cd ${B}
+	echo -e "y\n" | \
 	cygmake cyg
 }
 
@@ -85,7 +89,7 @@ src_install() {
 	ln -s uw-imapd.8 imapd.8
 	ln -s uw-ipopd.8 ipopd.8
 
-	dolib ${B}/c-client/c-client.a
+	newlib ${B}/c-client/c-client.a libc-client.a
 
 	includeinto c-client
 	doinclude ${S}/src/c-client/*.h

@@ -1,3 +1,16 @@
+--- origsrc/imap-2007f/Makefile	2011-07-23 02:20:21.000000000 +0200
++++ src/imap-2007f/Makefile	2019-04-29 00:24:02.850346100 -0400
+@@ -344,7 +344,7 @@ neb:	an
+ 	SPECIALS="SSLINCLUDE=/usr/include/openssl SSLLIB=/usr/lib SSLCERTS=/etc/openssl/certs SSLKEYS=/etc/openssl/private GSSINCLUDE=/usr/include GSSLIB=/usr/lib PAMLDFLAGS=-lpam"
+ 
+ cyg:	an
+-	$(BUILD) BUILDTYPE=cyg \
+-	SPECIALS="SSLINCLUDE=/usr/include/openssl SSLLIB=/usr/lib SSLCERTS=/usr/ssl/certs SSLKEYS=/usr/ssl/certs"
++	$(BUILD) BUILDTYPE=cyg IP=$(IP6) EXTRAAUTHENTICATORS=gss \
++	SPECIALS="SSLINCLUDE=/usr/include/openssl SSLLIB=/usr/lib SSLCERTS=/etc/pki/tls/certs SSLKEYS=/etc/pki/tls/private GSSDIR=/usr"
+ 
+ gcs:	an
+ 	$(BUILD) BUILDTYPE=gso \
 --- origsrc/imap-2007f/src/osdep/unix/Makefile	2011-07-23 02:20:10.000000000 +0200
 +++ src/imap-2007f/src/osdep/unix/Makefile	2013-03-21 17:13:14.917505300 +0100
 @@ -292,9 +291,10 @@ cyg:	# Cygwin - note that most local fil
